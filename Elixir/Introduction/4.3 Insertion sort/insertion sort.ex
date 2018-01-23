@@ -10,7 +10,7 @@ defmodule Sort do
     isort(tail, insert(head, sortedList))
   end
 
-  #If the sortedList is empty.
+  #If the sortedList is empty..
   def insert(x,[]) do
     [x]
   end
