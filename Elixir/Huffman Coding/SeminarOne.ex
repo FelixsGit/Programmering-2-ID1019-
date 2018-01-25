@@ -1,17 +1,18 @@
 defmodule Huffman do
-  def sample do
-    "the quick brown fox jumps over the lazy dog
-    this is a sample text that we will use when we build
-    up a table we will only handle lower case letters and
-    no punctuation symbols the frequency will of course not
-    represent english but it is probably not that far off"
-  end
-  def text, do: "this is something that we should encode"
 
-  def my_test(msg) do
+  def my_test(numberOfChars) do
+    msg = read('kallocain.txt', numberOfChars)
+    startTime = getTimeInMillis()
     tree = huffman_tree(freq(msg))
-    IO.inspect tree
-    encode_table(tree)
+    table = encode_table(tree)
+    bitsequence = encode(msg, table)
+    decode(bitsequence, table)
+    doneTime = (getTimeInMillis() - startTime)/1000
+    IO.puts 'runtime = #{doneTime} s'
+  end
+
+  def getTimeInMillis() do
+    :os.system_time(:millisecond)
   end
 
   def extractFreq ({c, f}) do
@@ -43,7 +44,7 @@ defmodule Huffman do
   end
 
   def insert({c, f}, []) do [{c, f}] end
-  def insert({c, f}, [{ch, fh} | t]) when f < fh do
+  def insert({c, f}, [{ch, fh} | t]) when f <= fh do
       [{c, f}, {ch, fh} | t]
   end
   def insert({c, f}, [h | t]) do
@@ -62,13 +63,44 @@ defmodule Huffman do
     [{char, path}]
   end
 
-  def decode_table(tree) do
-    # To implement...
+  # Complexity: O(tableSize * msgSize)
+ def encode([], _) do [] end
+ def encode([char | rest], table) do
+   encode_char(char, table) ++ encode(rest, table)
+ end
+
+ # Complexity: O(tableSize)
+ def encode_char(char, [{char, path} | _]) do
+   path
+ end
+ def encode_char(char, [{_, _} | rest]) do
+   encode_char(char, rest)
+ end
+
+  def decode([], _), do: []
+  def decode(seq, table) do
+    {char, rest} = decode_char(seq, 1, table)
+    [char | decode(rest, table)]
   end
-  def encode(text, table) do
-    # To implement...
+  def decode_char(seq, n, table) do
+    {code, rest} = Enum.split(seq, n)
+    case List.keyfind(table, code, 1) do
+      {char,_} -> {char, rest}
+      nil ->
+        decode_char(seq, n + 1, table)
+    end
   end
-  def decode(seq, tree) do
-    # To implement...
+
+  def read(file, n) do
+    {:ok, file} = File.open(file, [:read])
+    binary = IO.read(file, n)
+    File.close(file)
+    case :unicode.characters_to_list(binary, :utf8) do
+      {:incomplete, list, _} ->
+        list;
+        list ->
+          list
+    end
   end
+
 end
