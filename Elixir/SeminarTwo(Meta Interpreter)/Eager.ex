@@ -4,7 +4,7 @@ defmodule Eager do
     env = add(:x, 5, new())
     env = add(:y, 12, env)
     env = add(:z, 6, env)
-    eval_expr({:cons, {:var, :y}, {:atm, :z}}, env)
+    eval_expr({:cons, {:var, :y}, {:atm, :p}}, env)
   end
 
   def eval_expr({:atm, id}, _ ) do
