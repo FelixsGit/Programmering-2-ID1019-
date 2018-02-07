@@ -61,6 +61,9 @@ defmodule Eager do
     end
   end
 
+  def eval_expr({:atm, id}, _) do
+    {:ok, id}
+  end
   def eval_expr({:var, id}, env) do
     case lookup(id, env) do
       nil ->:error
