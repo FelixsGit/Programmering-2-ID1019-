@@ -10,8 +10,13 @@ defmodule Philosopher do
   end
 
   def dream(hunger,right, left, name, ctrl) do
-    sleep(@sleeping)
-    eat(hunger, right, left, name, ctrl)
+    if(hunger > 0) do
+      sleep(@sleeping)
+      eat(hunger, right, left, name, ctrl)
+    else
+      IO.puts "#{name} belly is full!"
+      send(ctrl, :quit)
+    end
   end
 
   def wait(hunger, right, left, name , ctrl) do
@@ -32,6 +37,7 @@ defmodule Philosopher do
         :processHaveStick ->
           IO.puts "#{name} received left chopstick"
         :no -> send(right, :return)
+          send(left, :return)
           wait(hunger, right, left, name , ctrl)
       end
       sleep(@eating)
@@ -40,16 +46,7 @@ defmodule Philosopher do
       IO.puts "#{name} returned right chopstick"
       send(left, :return)
       IO.puts "#{name} returned left chopstick"
-      hunger = hunger - 1
-      if(hunger < 1) do
-        IO.puts "#{name} belly is ful!"
-        send(ctrl, :quit)
-      else
-        dream(hunger,right, left, name, ctrl)
-      end
-    else
-      IO.puts "#{name} belly is full!"
-      send(ctrl, :quit)
+      dream(hunger - 1,right, left, name, ctrl)
     end
   end
 
