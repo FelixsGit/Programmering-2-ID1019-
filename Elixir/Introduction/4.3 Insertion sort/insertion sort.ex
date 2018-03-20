@@ -4,7 +4,7 @@ defmodule Sort do
     isort(list, [])
   end
   def isort([], sortedList) do
-    reverse(sortedList)
+    beterReverse(sortedList)
   end
   def isort([head | tail], sortedList) do
     isort(tail, insert(head, sortedList))
@@ -23,15 +23,8 @@ defmodule Sort do
     [head | insert(x, tail)]
   end
 
-
-  #This function reverses the elements in the entered list
-  def reverse(list) do
-    addElementToNewList(list,[])
-  end
-  def addElementToNewList([], newList) do
-    newList
-  end
-  def addElementToNewList([head | list] , newList) do
-    addElementToNewList(list,[head | newList])
+  def beterReverse(list) do
+    op = fn(h, t)->[h | t] end
+    List.foldl(list, [], op)
   end
 end
